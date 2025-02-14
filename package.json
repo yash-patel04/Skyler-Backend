@@ -1,0 +1,30 @@
+{
+  "name": "skyler-backend",
+  "version": "1.0.0",
+  "main": "api.js",
+  "scripts": {
+    "start": "nodemon Server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "events": "^3.3.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.13.0",
+    "mongoose": "^8.10.0",
+    "mqtt": "^5.10.3",
+    "nodemon": "^3.1.9"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0"
+  }
+}
