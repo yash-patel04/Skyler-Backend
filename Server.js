@@ -11,8 +11,6 @@ const PORT = 4000;
 app.use(bodyParser.json());
 app.use(cors());
 
-
-
 const mongoURI =
   "mongodb+srv://skylerUser:SkyLerUSeR2104@skyler.tums4.mongodb.net/?retryWrites=true&w=majority&appName=Skyler";
 
@@ -36,7 +34,6 @@ testDB.on("connected", () => console.log("✅ Connected to Test Database"));
 
 skylerDB.on("error", (err) => console.error("❌ Skyler DB Error:", err));
 testDB.on("error", (err) => console.error("❌ Test DB Error:", err));
-
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);

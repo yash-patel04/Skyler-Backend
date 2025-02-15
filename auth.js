@@ -2,10 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const rateLimit = require("express-rate-limit");
-const EventEmitter = require("events");
-
-const messageEmitter = new EventEmitter();
-let receiveMessage ="";
+const { setMessage } = require("./MQTT.mjs");
 
 const createRouter = ({ UserModel, CategoryModel }) => {
   const router = express.Router();
@@ -115,24 +112,21 @@ const createRouter = ({ UserModel, CategoryModel }) => {
   });
 
   // Message for MQTT
-    router.post("/mqtt/messages", async (req, res) => {
-      try {
-        const { message } = req.body;
-        console.log(message);
-        if (!message) {
-          return res.status(400).json({ message: "Message cannot be empty" });
-        }
-        // receiveMessage = message;
-        // console.log(receiveMessage);
-        messageEmitter.emit("newMessage", message);
-        console.log( messageEmitter);
-        res.status(200).json({ message: "Message published" });
-      } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+  router.post("/mqtt/messages", async (req, res) => {
+    try {
+      const { message } = req.body;
+      console.log(message);
+      if (!message) {
+        return res.status(400).json({ message: "Message cannot be empty" });
       }
-  }); 
+      setMessage(message);
+      res.status(200).json({ message: "Message published" });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   return router;
 };
 
-module.exports = { createRouter, messageEmitter };
+module.exports = { createRouter };
