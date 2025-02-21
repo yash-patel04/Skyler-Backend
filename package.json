@@ -1,7 +1,7 @@
 {
   "name": "skyler-backend",
   "version": "1.0.0",
-  "main": "api.js",
+  "main": "Server.js",
   "scripts": {
     "start": "nodemon Server.js"
   },
