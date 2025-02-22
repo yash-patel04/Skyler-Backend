@@ -4,12 +4,17 @@ const { createRouter } = require("./auth");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
+
 const app = express();
 const PORT = 4000;
 
 //Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://skyler.pages.dev', // Allow your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow POST
+  credentials: true,
+}));
 
 const mongoURI =
   "mongodb+srv://skylerUser:SkyLerUSeR2104@skyler.tums4.mongodb.net/?retryWrites=true&w=majority&appName=Skyler";

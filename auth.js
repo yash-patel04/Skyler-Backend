@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const rateLimit = require("express-rate-limit");
 const { setMessage } = require("./MQTT.mjs");
+const { check, validationResult } = require("express-validator");
 
 const createRouter = ({ UserModel, CategoryModel }) => {
   const router = express.Router();
@@ -50,32 +51,44 @@ const createRouter = ({ UserModel, CategoryModel }) => {
   });
 
   // Login Route
-  router.post("/login", loginLimiter, async (req, res) => {
-    const { username, password } = req.body;
-    console.log(username, password);
-    try {
-      // Check if user exists
-      const user = await UserModel.findOne({ username });
-      if (!user) {
-        return res.status(400).json({ message: "Invalid credentials" });
+  router.post(
+    "/login",
+    loginLimiter,
+    [
+      check("username").notEmpty().trim().escape(),
+      check("password").notEmpty().trim(),
+    ],
+    async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg });
       }
+      const { username, password } = req.body;
+      console.log(username, password);
+      try {
+        // Check if user exists
+        const user = await UserModel.findOne({ username });
+        if (!user) {
+          return res.status(400).json({ message: "Invalid credentials" });
+        }
 
-      // Compare password
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
+        // Compare password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        // Generate JWT
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
+
+        res.json({ token });
+      } catch (err) {
+        res.status(500).json({ message: "Server error" });
       }
-
-      // Generate JWT
-      const token = jwt.sign({ userId: user._id }, "JAY_SHREE_RAM", {
-        expiresIn: "1h",
-      });
-
-      res.json({ token });
-    } catch (err) {
-      res.status(500).json({ message: "Server error" });
     }
-  });
+  );
 
   // GET ALL Categories
   router.get("/get", async (req, res) => {
