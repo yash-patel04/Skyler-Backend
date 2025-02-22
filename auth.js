@@ -7,7 +7,6 @@ const { check, validationResult } = require("express-validator");
 
 const createRouter = ({ UserModel, CategoryModel }) => {
   const router = express.Router();
-
   const loginLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1-minute window
     max: 5, // Block after 5 requests
@@ -79,7 +78,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
         }
 
         // Generate JWT
-        const token = jwt.sign({ userId: user._id }, `${process.env.JWT_SECRET}`, {
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
           expiresIn: "1h",
         });
 
