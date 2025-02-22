@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 const mongoURI =
-process.env.MONGODB_SECRET;
+`${process.env.MONGODB_SECRET}`;
 
 console.log("Connecting to MongoDB...");
 
