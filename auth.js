@@ -79,7 +79,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
         }
 
         // Generate JWT
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ userId: user._id }, "JAY_SHREE_RAM", {
           expiresIn: "1h",
         });
 

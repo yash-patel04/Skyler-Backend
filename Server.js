@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 const mongoURI =
-  process.env.MONGODB_SECRET;
+  "mongodb+srv://skylerUser:SkyLerUSeR2104@skyler.tums4.mongodb.net/?retryWrites=true&w=majority&appName=Skyler";
 
 console.log("Connecting to MongoDB...");
 
