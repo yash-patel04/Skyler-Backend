@@ -11,7 +11,7 @@ const PORT = 4000;
 //Middleware
 app.use(bodyParser.json());
 app.use(cors({
-  origin: 'https://skyler.pages.dev', // Allow your frontend
+  origin: 'https://skyler-delta.vercel.app/', // Allow your frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow POST
   credentials: true,
 }));
