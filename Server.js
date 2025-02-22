@@ -21,7 +21,7 @@ app.use(rateLimit({
 // Middleware
 app.use(express.json()); // Use express.json() instead of body-parser
 app.use(cors({
-  origin: 'https://skyler.pages.dev', // Only allow your frontend
+  origin: 'https://skyler-delta.vercel.app', // Only allow your frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
