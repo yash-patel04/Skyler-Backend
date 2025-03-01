@@ -1,9 +1,25 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const rateLimit = require("express-rate-limit");
-const { setMessage } = require("./MQTT.mjs");
-const { check, validationResult } = require("express-validator");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
+import { setMessage } from "./MQTT.mjs";
+import { check, validationResult } from "express-validator";
+
+let connectionMsg = "";
+
+// MQTT Connection Options
+const getConnection = () => {
+  console.log(`[getConnection] Current message: ${connectionMsg}`);
+  return connectionMsg;
+};
+
+// Create a simple state management object
+const connectionState = {
+  setConnection(msg) {
+    connectionMsg = msg;
+    console.log("Message Connected:", connectionMsg);
+  },
+};
 
 const createRouter = ({ UserModel, CategoryModel }) => {
   const router = express.Router();
@@ -128,6 +144,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     try {
       const { message } = req.body;
       console.log(message);
+      // console.log(res);
       if (!message) {
         return res.status(400).json({ message: "Message cannot be empty" });
       }
@@ -138,7 +155,24 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     }
   });
 
+  // Connection Message for React
+  router.get("/mqtt/connected", async (req, res) => {
+    try {
+      const msg = getConnection();
+      if (!msg) {
+        return res.status(404).json({ message: "No connection message set" });
+      }
+      res.status(200).json({ message: msg });
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   return router;
 };
 
-module.exports = { createRouter };
+export default function setConnected(msg) {
+  connectionState.setConnection(msg);
+}
+
+export { createRouter };

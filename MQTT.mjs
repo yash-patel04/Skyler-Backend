@@ -1,38 +1,46 @@
-import mqtt from "mqtt";
 
-// MQTT Broker (HiveMQ Cloud)
-const mqttServer =
-  "mqtts://3b2168521a3c446b855086fe0db38168.s1.eu.hivemq.cloud:8883";
-const mqttUser = "Yash_patel";
-const mqttPassword = "YashPateL0@";
-const clientId = "NodeJS_Client";
+// require('dotenv').config();
+
+import dotenv from "dotenv";
+import mqtt from "mqtt";
+import setConnected from "./auth.mjs";
+dotenv.config();
 
 // Global variable to hold the current message
 let currentMessage = "";
 
 // MQTT Connection Options
 const options = {
-  clientId: clientId,
-  username: mqttUser,
-  password: mqttPassword,
+  clientId: process.env.MQTT_CLIENT_ID,
+  username: process.env.MQTT_USERNAME,
+  password: process.env.MQTT_PASSWORD,
   rejectUnauthorized: false,
 };
 
 console.log("🔄 Connecting to MQTT...");
 
 // Connect to MQTT Broker
-const client = mqtt.connect(mqttServer, options);
+const client = mqtt.connect(process.env.MQTT_URI, options);
 
-// MQTT Topic
-const topic = "Skyler";
+// MQTT Topics
+const sendTopic = process.env.MQTT_SEND_TOPIC;
+const receiveTopic = process.env.MQTT_RECEIVE_TOPIC;
 
 // When connected, subscribe to the topic
 client.on("connect", () => {
   console.log("✅ Connected to MQTT Broker");
 
-  client.subscribe(topic, (err) => {
+  client.subscribe(sendTopic, (err) => {
     if (!err) {
-      console.log(`📩 Subscribed to topic: ${topic}`);
+      console.log(`📩 Subscribed to topic: ${sendTopic}`);
+    } else {
+      console.error(`❌ Subscription failed: ${err.message}`);
+    }
+  });
+
+  client.subscribe(receiveTopic, (err) => {
+    if (!err) {
+      console.log(`📩 Subscribed to topic: ${receiveTopic}`);
     } else {
       console.error(`❌ Subscription failed: ${err.message}`);
     }
@@ -42,7 +50,7 @@ client.on("connect", () => {
 // Function to publish the current message
 function publishMessage() {
   if (client.connected) {
-    client.publish(topic, currentMessage, (err) => {
+    client.publish(sendTopic, currentMessage, (err) => {
       if (err) {
         console.error("Error publishing message:", err);
       } else {
@@ -63,9 +71,10 @@ export function setMessage(msg) {
 }
 
 // Handle incoming messages
-client.on("message", (topic, message) => {
-  console.log(`📬 Message received on topic: ${topic}`);
+client.on("message", (receiveTopic, message) => {
+  console.log(`📬 Message received on topic: ${receiveTopic}`);
   console.log(`📝 Message: ${message.toString()}`);
+  setConnected(message.toString());
 });
 
 // Handle errors

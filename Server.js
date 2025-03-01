@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
-const { createRouter } = require("./auth");
+const { createRouter } = require("./auth.mjs"); // Ensure the file name is case-sensitive
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
