@@ -144,7 +144,6 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     try {
       const { message } = req.body;
       console.log(message);
-      // console.log(res);
       if (!message) {
         return res.status(400).json({ message: "Message cannot be empty" });
       }
