@@ -9,7 +9,6 @@ let connectionMsg = "";
 
 // MQTT Connection Options
 const getConnection = () => {
-  console.log(`[getConnection] Current message: ${connectionMsg}`);
   const msg = connectionMsg;
   connectionMsg = ""; // Clear the message after retrieving it
   return msg;
@@ -19,7 +18,6 @@ const getConnection = () => {
 const connectionState = {
   setConnection(msg) {
     connectionMsg = msg;
-    console.log("Message Connected:", connectionMsg);
   },
 };
 
@@ -81,7 +79,6 @@ const createRouter = ({ UserModel, CategoryModel }) => {
         return res.status(400).json({ message: errors.array()[0].msg });
       }
       const { username, password } = req.body;
-      console.log(username, password);
       try {
         // Check if user exists
         const user = await UserModel.findOne({ username });
@@ -145,7 +142,6 @@ const createRouter = ({ UserModel, CategoryModel }) => {
   router.post("/mqtt/messages", async (req, res) => {
     try {
       const { message } = req.body;
-      console.log(message);
       if (!message) {
         return res.status(400).json({ message: "Message cannot be empty" });
       }
