@@ -10,7 +10,9 @@ let connectionMsg = "";
 // MQTT Connection Options
 const getConnection = () => {
   console.log(`[getConnection] Current message: ${connectionMsg}`);
-  return connectionMsg;
+  const msg = connectionMsg;
+  connectionMsg = ""; // Clear the message after retrieving it
+  return msg;
 };
 
 // Create a simple state management object
