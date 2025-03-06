@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -13,18 +13,37 @@ const app = express();
 app.use(helmet());
 
 // Rate limiting
-app.use(rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-}));
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+  })
+);
 
 // Middleware
 app.use(express.json()); // Use express.json() instead of body-parser
-app.use(cors({
-  origin: 'https://skyler-delta.vercel.app', // Only allow your frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-}));
+
+// CORS middleware to allow requests from specific origins
+const allowedOrigins = [
+  "https://skyler-delta.vercel.app",
+  "http://localhost:5173",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 console.log("Connecting to MongoDB...");
 
@@ -38,8 +57,12 @@ if (!process.env.MONGODB_URI) {
 console.log("Connecting to MongoDB with URI:", process.env.MONGODB_URI);
 
 // Create two separate connections
-const skylerDB = mongoose.createConnection(process.env.MONGODB_URI, { dbName: "Skyler" });
-const testDB = mongoose.createConnection(process.env.MONGODB_URI, { dbName: "test" });
+const skylerDB = mongoose.createConnection(process.env.MONGODB_URI, {
+  dbName: "Skyler",
+});
+const testDB = mongoose.createConnection(process.env.MONGODB_URI, {
+  dbName: "test",
+});
 
 // Import models with separate DB connections
 const CategoryModel = require("./models/Category")(skylerDB);
@@ -53,10 +76,16 @@ app.use("/api/auth", authRoutes);
 skylerDB.on("connected", () => console.log("✅ Connected to Skyler Database"));
 testDB.on("connected", () => console.log("✅ Connected to Test Database"));
 
-skylerDB.on("disconnected", () => console.log("⚠️ Disconnected from Skyler Database"));
-testDB.on("disconnected", () => console.log("⚠️ Disconnected from Test Database"));
+skylerDB.on("disconnected", () =>
+  console.log("⚠️ Disconnected from Skyler Database")
+);
+testDB.on("disconnected", () =>
+  console.log("⚠️ Disconnected from Test Database")
+);
 
-skylerDB.on("reconnected", () => console.log("✅ Reconnected to Skyler Database"));
+skylerDB.on("reconnected", () =>
+  console.log("✅ Reconnected to Skyler Database")
+);
 testDB.on("reconnected", () => console.log("✅ Reconnected to Test Database"));
 
 skylerDB.on("error", (err) => console.error("❌ Skyler DB Error:", err));
