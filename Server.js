@@ -45,15 +45,6 @@ app.use(
 
 console.log("Connecting to MongoDB...");
 
-// Validate MONGODB_URI
-if (!process.env.MONGODB_URI) {
-  console.error("❌ MONGODB_URI environment variable is not set");
-  console.log("Connecting to MongoDB with URI:", process.env.MONGODB_URI);
-  process.exit(1);
-}
-
-console.log("Connecting to MongoDB with URI:", process.env.MONGODB_URI);
-
 // Create two separate connections
 const skylerDB = mongoose.createConnection(process.env.MONGODB_URI, {
   dbName: "Skyler",
@@ -113,5 +104,3 @@ process.on("SIGINT", async () => {
   console.log("Server shutting down...");
   process.exit(0);
 });
-
-module.exports = { CategoryModel, UserModel };

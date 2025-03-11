@@ -1,9 +1,5 @@
-
-// require('dotenv').config();
-
 import dotenv from "dotenv";
 import mqtt from "mqtt";
-import setConnected from "./auth.mjs";
 dotenv.config();
 
 // Global variable to hold the current message
@@ -24,7 +20,6 @@ const client = mqtt.connect(process.env.MQTT_URI, options);
 
 // MQTT Topics
 const sendTopic = process.env.MQTT_SEND_TOPIC;
-const receiveTopic = process.env.MQTT_RECEIVE_TOPIC;
 
 // When connected, subscribe to the topic
 client.on("connect", () => {
@@ -38,13 +33,6 @@ client.on("connect", () => {
     }
   });
 
-  client.subscribe(receiveTopic, (err) => {
-    if (!err) {
-      console.log(`📩 Subscribed to topic: ${receiveTopic}`);
-    } else {
-      console.error(`❌ Subscription failed: ${err.message}`);
-    }
-  });
 });
 
 // Function to publish the current message
@@ -64,19 +52,9 @@ function publishMessage() {
 
 // Exported function to update the message and then publish it
 export function setMessage(msg) {
-  console.log("msg", msg);
   currentMessage = msg;
-  console.log("Message updated:", currentMessage);
   publishMessage();
 }
-
-// Handle incoming messages
-client.on("message", (receiveTopic, message) => {
-  console.log(`📬 Message received on topic: ${receiveTopic}`);
-  console.log(`📝 Message: ${message.toString()}`);
-  setConnected(message.toString());
-});
-
 // Handle errors
 client.on("error", (err) => {
   console.error(`❌ MQTT Connection Error: ${err.message}`);

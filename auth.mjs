@@ -5,22 +5,6 @@ import rateLimit from "express-rate-limit";
 import { setMessage } from "./MQTT.mjs";
 import { check, validationResult } from "express-validator";
 
-let connectionMsg = "";
-
-// MQTT Connection Options
-const getConnection = () => {
-  const msg = connectionMsg;
-  connectionMsg = ""; // Clear the message after retrieving it
-  return msg;
-};
-
-// Create a simple state management object
-const connectionState = {
-  setConnection(msg) {
-    connectionMsg = msg;
-  },
-};
-
 const createRouter = ({ UserModel, CategoryModel }) => {
   const router = express.Router();
   const loginLimiter = rateLimit({
@@ -29,13 +13,6 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     message: "Too many login attempts, try again after a minute",
     headers: true,
   });
-
-  // Helper functions
-  const findMainAction = async (main_id) =>
-    await CategoryModel.findOne({ _id: main_id });
-
-  const findSubAction = (mainAction, category_id) =>
-    mainAction?.categories.find((cat) => cat._id.toString() === category_id);
 
   // Register Route
   router.post("/register", async (req, res) => {
@@ -116,28 +93,6 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     }
   });
 
-  // GET BY ID sub action
-  router.get("/get/:main_id/:category_id", async (req, res) => {
-    const main_id = req.params.main_id;
-    const category_id = req.params.category_id;
-    try {
-      const mainAction = await findMainAction(main_id);
-      if (!mainAction) {
-        return res.status(404).json({ message: "Main action not found" });
-      }
-      const subAction = findSubAction(mainAction, category_id);
-      if (!subAction) {
-        return res.status(404).json({ message: "Sub action not found" });
-      }
-
-      res.json(subAction);
-    } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error processing request", error: error.message });
-    }
-  });
-
   // Message for MQTT
   router.post("/mqtt/messages", async (req, res) => {
     try {
@@ -152,24 +107,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     }
   });
 
-  // Connection Message for React
-  router.get("/mqtt/connected", async (req, res) => {
-    try {
-      const msg = getConnection();
-      if (!msg) {
-        return res.status(404).json({ message: "No connection message set" });
-      }
-      res.status(200).json({ message: msg });
-    } catch (err) {
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
   return router;
 };
-
-export default function setConnected(msg) {
-  connectionState.setConnection(msg);
-}
 
 export { createRouter };
