@@ -53,20 +53,28 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ message: errors.array()[0].msg });
+        const validationErrors = {};
+        errors.array().forEach((err) => {
+          validationErrors[err.param] = err.msg;
+        });
+        return res.status(400).json({ errors: validationErrors });
       }
       const { username, password } = req.body;
       try {
         // Check if user exists
         const user = await UserModel.findOne({ username });
+        const validationErrors = {};
+
         if (!user) {
-          return res.status(400).json({ message: "Invalid credentials" });
+          validationErrors.username = "Username not found";
         }
 
-        // Compare password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return res.status(400).json({ message: "Invalid credentials" });
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+          validationErrors.password = "Incorrect password";
+        }
+  
+        if (Object.keys(validationErrors).length > 0) {
+          return res.status(400).json({ errors: validationErrors });
         }
 
         // Generate JWT
