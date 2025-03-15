@@ -47,8 +47,8 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     "/login",
     loginLimiter,
     [
-      check("username").notEmpty().trim().escape(),
-      check("password").notEmpty().trim(),
+      check("username").notEmpty().trim().escape().withMessage("Enter Username"),
+      check("password").notEmpty().trim().withMessage("Enter Password"),,
     ],
     async (req, res) => {
       const errors = validationResult(req);
@@ -66,11 +66,11 @@ const createRouter = ({ UserModel, CategoryModel }) => {
         const validationErrors = {};
 
         if (!user) {
-          validationErrors.username = "Username not found";
+          validationErrors.username = "Incorrect Username";
         }
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
-          validationErrors.password = "Incorrect password";
+          validationErrors.password = "Incorrect Password";
         }
   
         if (Object.keys(validationErrors).length > 0) {
