@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const { createRouter } = require("./auth.mjs"); // Ensure the file name is case-sensitive
+const { createRouter } = require("./auth.mjs");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
@@ -15,13 +15,13 @@ app.use(helmet());
 // Rate limiting
 app.use(
   rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 30 * 60 * 1000, // 30 minutes
     max: 100, // Limit each IP to 100 requests per windowMs
   })
 );
 
 // Middleware
-app.use(express.json()); // Use express.json() instead of body-parser
+app.use(express.json());
 
 // CORS middleware to allow requests from specific origins
 const allowedOrigins = [
@@ -35,7 +35,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -65,6 +65,7 @@ app.use("/api/auth", authRoutes);
 skylerDB.on("connected", () => console.log("✅ Connected to Skyler Database"));
 testDB.on("connected", () => console.log("✅ Connected to Test Database"));
 
+// Disconnect from databases on termination
 skylerDB.on("disconnected", () =>
   console.log("⚠️ Disconnected from Skyler Database")
 );
@@ -72,11 +73,13 @@ testDB.on("disconnected", () =>
   console.log("⚠️ Disconnected from Test Database")
 );
 
+// Reconnection logic for databases
 skylerDB.on("reconnected", () =>
   console.log("✅ Reconnected to Skyler Database")
 );
 testDB.on("reconnected", () => console.log("✅ Reconnected to Test Database"));
 
+// Error handling for databases
 skylerDB.on("error", (err) => console.error("❌ Skyler DB Error:", err));
 testDB.on("error", (err) => console.error("❌ Test DB Error:", err));
 

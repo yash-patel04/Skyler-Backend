@@ -8,7 +8,7 @@ import { check, validationResult } from "express-validator";
 const createRouter = ({ UserModel, CategoryModel }) => {
   const router = express.Router();
   const loginLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1-minute window
+    windowMs: 30 * 60 * 1000, // 30-minute window
     max: 5, // Block after 5 requests
     message: "Too many login attempts, try again after a minute",
     headers: true,
@@ -47,11 +47,16 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     "/login",
     loginLimiter,
     [
-      check("username").notEmpty().trim().escape().withMessage("Enter Username"),
+      check("username")
+        .notEmpty()
+        .trim()
+        .escape()
+        .withMessage("Enter Username"),
       check("password").notEmpty().trim().withMessage("Enter Password"),
     ],
     async (req, res) => {
       const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         const validationErrors = {};
         errors.array().forEach((err) => {
@@ -72,7 +77,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
         if (!user || !(await bcrypt.compare(password, user.password))) {
           validationErrors.password = "Incorrect Password";
         }
-  
+
         if (Object.keys(validationErrors).length > 0) {
           return res.status(400).json({ errors: validationErrors });
         }

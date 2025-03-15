@@ -32,7 +32,6 @@ client.on("connect", () => {
       console.error(`❌ Subscription failed: ${err.message}`);
     }
   });
-
 });
 
 // Function to publish the current message
