@@ -70,7 +70,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
         }
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
-          validationErrors.password = "Detail is invalid";
+          validationErrors.password = "Incorrect Password";
         }
   
         if (Object.keys(validationErrors).length > 0) {
