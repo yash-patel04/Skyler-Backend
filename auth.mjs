@@ -9,7 +9,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
   const router = express.Router();
   const loginLimiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 30-minute window
-    max: 100, // Block after 50 requests
+    max: 100, // Block after 100 requests
     message: "Too many login attempts, try again after a minute",
     headers: true,
   });
