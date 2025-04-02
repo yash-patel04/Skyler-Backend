@@ -55,8 +55,8 @@ const testDB = mongoose.createConnection(process.env.MONGODB_URI, {
 });
 
 // Import models with separate DB connections
-import CategoryModel from './models/Category.js';
-import UserModel from './models/User.js';
+import CategoryModel from "./models/Category.js";
+import UserModel from "./models/User.js";
 
 const category = CategoryModel(skylerDB);
 const user = UserModel(testDB);

@@ -18,4 +18,4 @@ const categorySchema = new mongoose.Schema({
   ],
 });
 
-module.exports = (skylerDB) => skylerDB.model("Category", categorySchema);
+export default (skylerDB) => skylerDB.model("Category", categorySchema);
