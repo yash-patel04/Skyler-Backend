@@ -1,11 +1,12 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const express = require("express");
-const cors = require("cors");
-const { createRouter } = require("./auth.mjs");
-const mongoose = require("mongoose");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+import express from "express";
+import cors from "cors";
+import { createRouter } from "./auth.mjs";
+import mongoose from "mongoose";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 const app = express();
 
