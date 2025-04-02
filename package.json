@@ -1,7 +1,8 @@
 {
   "name": "skyler-backend",
   "version": "1.0.0",
-  "main": "Server.js",
+  "main": "Server.mjs",
+  "type": "module",
   "scripts": {
     "start": "nodemon Server.mjs"
   },
