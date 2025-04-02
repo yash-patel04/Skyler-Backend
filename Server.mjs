@@ -55,8 +55,11 @@ const testDB = mongoose.createConnection(process.env.MONGODB_URI, {
 });
 
 // Import models with separate DB connections
-const CategoryModel = require("./models/Category")(skylerDB);
-const UserModel = require("./models/User")(testDB);
+import CategoryModel from './models/Category.js';
+import UserModel from './models/User.js';
+
+const category = CategoryModel(skylerDB);
+const user = UserModel(testDB);
 
 // Pass models to auth routes
 const authRoutes = createRouter({ UserModel, CategoryModel });
