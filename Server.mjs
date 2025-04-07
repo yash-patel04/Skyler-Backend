@@ -62,7 +62,7 @@ const category = CategoryModel(skylerDB);
 const user = UserModel(testDB);
 
 // Pass models to auth routes
-const authRoutes = createRouter({ UserModel, CategoryModel });
+const authRoutes = createRouter({ user, category });
 app.use("/api/auth", authRoutes);
 
 // Test connection logs and error handling

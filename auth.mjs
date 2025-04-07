@@ -5,7 +5,7 @@ import rateLimit from "express-rate-limit";
 import { setMessage } from "./MQTT.mjs";
 import { check, validationResult } from "express-validator";
 
-const createRouter = ({ UserModel, CategoryModel }) => {
+const createRouter = ({ user, category }) => {
   const router = express.Router();
   const loginLimiter = rateLimit({
     windowMs: 30 * 60 * 1000, // 30-minute window
@@ -19,7 +19,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
     const { username, password } = req.body;
     try {
       // Check if user exists
-      const existingUser = await UserModel.findOne({ username });
+      const existingUser = await user.findOne({ username });
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
       }
@@ -29,7 +29,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
       const hashedPassword = await bcrypt.hash(password, salt);
 
       // Create new user
-      const newUser = new UserModel({
+      const newUser = new user({
         username,
         password: hashedPassword,
       });
@@ -67,7 +67,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
       const { username, password } = req.body;
       try {
         // Check if user exists
-        const user = await UserModel.findOne({ username });
+        const user = await user.findOne({ username });
         const validationErrors = {};
 
         if (!user) {
@@ -97,7 +97,7 @@ const createRouter = ({ UserModel, CategoryModel }) => {
   // GET ALL Categories
   router.get("/get", async (req, res) => {
     try {
-      const categories = await CategoryModel.find();
+      const categories = await category.find();
       res.status(200).json(categories);
     } catch (error) {
       res
